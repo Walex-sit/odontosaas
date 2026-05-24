@@ -28,14 +28,31 @@ export default function Usuarios() {
   }
 
   async function alterarRole(userId: string, novaRole: string) {
-    await supabase
-      .from('user_profiles')
-      .update({ role: novaRole })
-      .eq('id', userId)
+    // Guarda o role antigo para reverter em caso de erro
+    const roleAnterior = usuarios.find(u => u.id === userId)?.role
 
-    await logAction('edicao', 'usuarios', { user_id_afetado: userId, nova_role: novaRole })
+    // Atualiza otimisticamente o estado local imediatamente
+    setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: novaRole } : u))
 
-    carregarUsuarios()
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ role: novaRole })
+        .eq('id', userId)
+
+      if (error) {
+        // Reverte o estado local se falhar
+        setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: roleAnterior } : u))
+        alert(`Erro ao alterar perfil: ${error.message}`)
+        console.error('Erro na alteração de role:', error)
+      } else {
+        await logAction('edicao', 'usuarios', { user_id_afetado: userId, nova_role: novaRole })
+      }
+    } catch (e: any) {
+      // Reverte o estado local se falhar
+      setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: roleAnterior } : u))
+      alert(`Erro inesperado: ${e.message || e}`)
+    }
   }
 
   useEffect(() => { carregarUsuarios() }, [])

@@ -92,11 +92,12 @@ BEGIN
   VALUES (
     new.id, 
     COALESCE(new.raw_user_meta_data->>'full_name', new.email, 'Usuário'), 
-    'admin'
-  );
+    'admin'::public.user_role
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Se o gatilho já existir, você terá que excluí-lo primeiro ou ignorar esse bloco
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
@@ -107,10 +108,16 @@ CREATE TRIGGER on_auth_user_created
 
 -- Inserir os perfis para usuários já existentes
 INSERT INTO public.user_profiles (id, nome, role)
-SELECT id, email, 'admin' FROM auth.users
+SELECT id, email, 'admin'::public.user_role FROM auth.users
 ON CONFLICT (id) DO NOTHING;
+
 -- 10. Políticas de Segurança (RLS)
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
+
+-- Permitir a inserção de novos perfis (necessário se o RLS for verificado durante o gatilho)
+CREATE POLICY "Allow insert for new users profile" 
+ON public.user_profiles FOR INSERT 
+WITH CHECK (true);
 
 -- Permitir que qualquer usuário autenticado veja seu próprio perfil
 CREATE POLICY "Users can view own profile" 

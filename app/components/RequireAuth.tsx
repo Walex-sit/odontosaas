@@ -92,7 +92,8 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       mounted = false
       subscription.unsubscribe()
     }
-  }, [router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // <- dependência vazia: checkSession roda apenas no mount, não a cada navegação
 
   if (loading) {
     return (
