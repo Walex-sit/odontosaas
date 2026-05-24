@@ -93,7 +93,7 @@ export default function LandingPage() {
           O novo padrão em tecnologia clínica
         </div>
 
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight max-w-4xl leading-tight mb-6 gsap-fade-up">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight max-w-4xl leading-tight mb-6 gsap-fade-up">
           A nova geração da <br className="hidden md:block" />
           <span className="text-blue-600">gestão odontológica</span>
         </h1>

@@ -5,11 +5,13 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { Calendar as CalendarIcon, Clock, User, Plus } from 'lucide-react'
 
 export default function Agenda() {
   const router = useRouter()
   const [pacientes, setPacientes] = useState<any[]>([])
   const [agendamentos, setAgendamentos] = useState<any[]>([])
+  const [carregando, setCarregando] = useState(true)
 
   const [pacienteId, setPacienteId] = useState('')
   const [dataConsulta, setDataConsulta] = useState('')
@@ -48,81 +50,90 @@ export default function Agenda() {
       return
     }
 
-    await supabase.from('agendamentos').insert([
-      {
-        paciente_id: pacienteId,
-        data_consulta: dataConsulta,
-        hora_consulta: horaConsulta
-      }
-    ])
+    try {
+      await supabase.from('agendamentos').insert([
+        {
+          paciente_id: pacienteId,
+          data_consulta: dataConsulta,
+          hora_consulta: horaConsulta
+        }
+      ])
 
-    setPacienteId('')
-    setDataConsulta('')
-    setHoraConsulta('')
+      setPacienteId('')
+      setDataConsulta('')
+      setHoraConsulta('')
 
-    carregarAgendamentos()
+      carregarAgendamentos()
+    } catch (e) {
+      alert('Erro ao criar agendamento')
+    }
   }
 
   useEffect(() => {
-    carregarPacientes()
-    carregarAgendamentos()
+    async function init() {
+      await Promise.all([carregarPacientes(), carregarAgendamentos()])
+      setCarregando(false)
+    }
+    init()
   }, [])
 
   const eventos = agendamentos.map((a) => ({
     title: a.pacientes?.nome || 'Consulta',
     date: a.data_consulta,
-    color: '#3b82f6'
+    color: '#2563eb' // Blue theme
   }))
 
   return (
     <>
+      {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">Agenda da Clínica</h2>
-          <p className="text-slate-400 mt-1">Gerencie os horários e agendamentos</p>
+          <h2 className="text-2xl font-bold text-slate-800">Agenda da Clínica</h2>
+          <p className="text-slate-500 mt-1 text-sm">Gerencie os horários e agendamentos</p>
         </div>
       </div>
 
-      <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 mb-8">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+      {/* Card de Novo Agendamento */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
+        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <CalendarIcon className="h-5 w-5 text-blue-600" />
           Novo Agendamento
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Paciente</label>
-            <select
-              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
-              value={pacienteId}
-              onChange={(e) => setPacienteId(e.target.value)}
-            >
-              <option value="" className="text-slate-500">Selecione o paciente</option>
-              {pacientes.map((p) => (
-                <option key={p.id} value={p.id} className="text-white bg-slate-800">
-                  {p.nome}
-                </option>
-              ))}
-            </select>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Paciente</label>
+            <div className="relative">
+              <select
+                className="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all shadow-sm"
+                value={pacienteId}
+                onChange={(e) => setPacienteId(e.target.value)}
+              >
+                <option value="" className="text-slate-500">Selecione o paciente</option>
+                {pacientes.map((p) => (
+                  <option key={p.id} value={p.id} className="text-slate-800">
+                    {p.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Data</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Data</label>
             <input
               type="date"
-              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+              className="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all shadow-sm"
               value={dataConsulta}
               onChange={(e) => setDataConsulta(e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Horário</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Horário</label>
             <input
               type="time"
-              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+              className="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all shadow-sm"
               value={horaConsulta}
               onChange={(e) => setHoraConsulta(e.target.value)}
             />
@@ -130,68 +141,75 @@ export default function Agenda() {
 
           <button
             onClick={salvarAgendamento}
-            className="w-full bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm h-[42px] border border-blue-500"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl transition-all font-bold text-sm h-[42px] border border-blue-700 shadow-sm flex items-center justify-center shrink-0 active:scale-95"
           >
             Agendar
           </button>
         </div>
       </div>
 
+      {/* Calendário e Próximas Consultas */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800">
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+        
+        {/* Bloco do Calendário */}
+        <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-slate-500" />
             Calendário Mensal
           </h3>
           
-          <div className="calendar-container dark-calendar">
-            <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={eventos}
-              height="auto"
-              locale="pt-br"
-              buttonText={{ today: 'Hoje' }}
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth'
-              }}
-            />
+          <div className="calendar-container clinical-calendar overflow-x-auto no-scrollbar">
+            <div className="min-w-[500px]">
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                initialView="dayGridMonth"
+                events={eventos}
+                height="auto"
+                locale="pt-br"
+                buttonText={{ today: 'Hoje' }}
+                headerToolbar={{
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: 'dayGridMonth'
+                }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 h-fit">
-          <h3 className="text-lg font-bold text-white mb-4">
+        {/* Bloco de Próximas Consultas */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+          <h3 className="text-lg font-bold text-slate-800 mb-4">
             Próximas consultas
           </h3>
 
-          {agendamentos.length === 0 ? (
+          {carregando ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+          ) : agendamentos.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-slate-400 font-medium text-sm">Nenhuma consulta agendada.</p>
+              <p className="text-slate-500 font-medium text-sm">Nenhuma consulta agendada.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {agendamentos.map((a) => (
                 <div
                   key={a.id}
-                  className="border border-slate-700 rounded-xl p-4 flex justify-between items-center hover:bg-slate-800 transition-colors"
+                  className="border border-slate-100 rounded-xl p-4 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition-colors shadow-sm"
                 >
-                  <div>
-                    <p className="font-bold text-white text-sm">
+                  <div className="min-w-0 pr-3">
+                    <p className="font-bold text-slate-800 text-sm truncate">
                       {a.pacientes?.nome || 'Paciente não encontrado'}
                     </p>
-                    <div className="flex items-center text-slate-400 text-xs mt-1 font-medium gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                    <div className="flex items-center text-slate-500 text-xs mt-1 font-medium gap-1">
+                      <CalendarIcon className="h-3.5 w-3.5" />
                       {new Date(a.data_consulta).toLocaleDateString('pt-BR')}
                     </div>
                   </div>
 
-                  <div className="font-bold text-blue-400 bg-blue-900/30 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs">
+                  <div className="font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shrink-0">
+                    <Clock className="h-3 w-3" />
                     {a.hora_consulta}
                   </div>
                 </div>
@@ -199,6 +217,7 @@ export default function Agenda() {
             </div>
           )}
         </div>
+
       </div>
     </>
   )
