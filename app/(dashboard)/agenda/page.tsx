@@ -149,10 +149,10 @@ export default function Agenda() {
       </div>
 
       {/* Calendário e Próximas Consultas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
-        {/* Bloco do Calendário */}
-        <div className="lg:col-span-2 bg-slate-800 p-4 sm:p-6 rounded-2xl border border-slate-700/50 shadow-sm">
+        {/* Bloco do Calendário (Apenas Desktop/Tablet largo) */}
+        <div className="hidden lg:block lg:col-span-2 bg-slate-800 p-4 sm:p-6 rounded-2xl border border-slate-700/50 shadow-sm">
           <h3 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2">
             <CalendarIcon className="h-5 w-5 text-slate-400" />
             Calendário Mensal
@@ -177,8 +177,8 @@ export default function Agenda() {
           </div>
         </div>
 
-        {/* Bloco de Próximas Consultas */}
-        <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-sm h-fit">
+        {/* Bloco de Próximas Consultas (Ocupa 100% de largura no mobile) */}
+        <div className="bg-slate-800 p-5 sm:p-6 rounded-2xl border border-slate-700/50 shadow-sm h-fit">
           <h3 className="text-lg font-bold text-slate-100 mb-4">
             Próximas consultas
           </h3>

@@ -119,54 +119,92 @@ export default function Pacientes() {
             <p className="text-slate-400 text-sm">Adicione seu primeiro paciente usando o formulário acima.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paciente</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID Registro</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data de Cadastro</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {pacientes.map((p) => (
-                  <tr 
-                    key={p.id} 
-                    className="hover:bg-slate-700/30 transition-colors cursor-pointer group"
-                    onClick={() => router.push(`/pacientes/${p.id}`)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-sm">
-                          {p.nome.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-slate-200 group-hover:text-blue-450 transition-colors">{p.nome}</div>
-                          <div className="text-xs text-slate-450">Paciente Ativo</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
-                      #{p.id.substring(0, 8)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
-                      {new Date(p.created_at).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        onClick={() => router.push(`/pacientes/${p.id}`)}
-                        className="text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95"
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                        Ver Ficha
-                      </button>
-                    </td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paciente</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID Registro</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data de Cadastro</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {pacientes.map((p) => (
+                    <tr 
+                      key={p.id} 
+                      className="hover:bg-slate-700/30 transition-colors cursor-pointer group"
+                      onClick={() => router.push(`/pacientes/${p.id}`)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-sm">
+                            {p.nome.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-slate-200 group-hover:text-blue-455 transition-colors">{p.nome}</div>
+                            <div className="text-xs text-slate-450">Paciente Ativo</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                        #{p.id.substring(0, 8)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                        {new Date(p.created_at).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                        <button 
+                          onClick={() => router.push(`/pacientes/${p.id}`)}
+                          className="text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Ver Ficha
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile List Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {pacientes.map((p) => (
+                <div 
+                  key={p.id} 
+                  className="p-4 hover:bg-slate-700/20 transition-colors cursor-pointer"
+                  onClick={() => router.push(`/pacientes/${p.id}`)}
+                >
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-10 w-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-sm shrink-0">
+                        {p.nome.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-200 truncate">{p.nome}</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">Cadastrado: {new Date(p.created_at).toLocaleDateString('pt-BR')}</div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-450 bg-slate-900 border border-slate-700/50 px-2 py-1 rounded shrink-0">
+                      #{p.id.substring(0, 8)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-end pt-1" onClick={(e) => e.stopPropagation()}>
+                    <button 
+                      onClick={() => router.push(`/pacientes/${p.id}`)}
+                      className="w-full text-center text-blue-400 bg-blue-500/5 border border-blue-500/10 py-2 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-[0.98]"
+                    >
+                      Ver Ficha do Paciente
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </>

@@ -129,28 +129,51 @@ export default function Compras() {
             <p className="text-slate-400 text-sm">Registre a primeira compra acima.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[500px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fornecedor</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {compras.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{c.descricao}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{c.fornecedores?.nome || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{c.data_compra ? new Date(c.data_compra + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-slate-200">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(c.valor_total))}</td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fornecedor</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {compras.map((c) => (
+                    <tr key={c.id} className="hover:bg-slate-700/30 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{c.descricao}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{c.fornecedores?.nome || '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{c.data_compra ? new Date(c.data_compra + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-slate-200">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(c.valor_total))}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {compras.map((c) => (
+                <div key={c.id} className="p-4 hover:bg-slate-700/20 transition-colors">
+                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-200 truncate">{c.descricao}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Fornecedor: {c.fornecedores?.nome || '—'}</div>
+                    </div>
+                    <div className="text-right font-bold text-sm text-slate-250 shrink-0">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(c.valor_total))}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-slate-450 font-medium">
+                    Data da Compra: {c.data_compra ? new Date(c.data_compra + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </>

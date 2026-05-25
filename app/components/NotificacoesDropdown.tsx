@@ -51,7 +51,7 @@ export default function NotificacoesDropdown({
   return (
     <div
       ref={containerRef}
-      className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl shadow-2xl z-50 overflow-hidden"
+      className="absolute right-[-40px] xs:right-0 mt-3 w-[280px] xs:w-80 sm:w-96 rounded-2xl shadow-2xl z-50 overflow-hidden"
       style={{
         background: '#131c2e',
         border: '1px solid rgba(148,163,184,0.14)',

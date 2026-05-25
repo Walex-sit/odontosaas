@@ -144,49 +144,78 @@ export default function Financeiro() {
           </div>
         ) : receitas.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <div className="h-16 w-16 bg-slate-900 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-800">
+            <div className="h-16 w-16 bg-slate-900 text-slate-550 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-800">
               <DollarSign className="h-8 w-8" />
             </div>
             <h3 className="text-lg font-bold text-slate-100 mb-1">Nenhuma receita lançada</h3>
             <p className="text-slate-400 text-sm">Comece a registrar as receitas da clínica.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[500px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {receitas.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-700/30 transition-colors group">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-bold text-slate-200 text-sm">{r.descricao}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
-                      {new Date(r.created_at).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${
-                        r.status === 'pendente' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
-                        r.status === 'pago' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                        'bg-slate-900 text-slate-450 border border-slate-750'
-                      }`}>
-                        {r.status ? r.status.toUpperCase() : 'PENDENTE'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-emerald-450">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(r.valor))}
-                    </td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Descrição</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {receitas.map((r) => (
+                    <tr key={r.id} className="hover:bg-slate-700/30 transition-colors group">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-bold text-slate-200 text-sm">{r.descricao}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                        {new Date(r.created_at).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${
+                          r.status === 'pendente' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
+                          r.status === 'pago' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                          'bg-slate-900 text-slate-450 border border-slate-750'
+                        }`}>
+                          {r.status ? r.status.toUpperCase() : 'PENDENTE'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-emerald-450">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(r.valor))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {receitas.map((r) => (
+                <div key={r.id} className="p-4 hover:bg-slate-700/20 transition-colors">
+                  <div className="flex justify-between items-start mb-2 gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-200 truncate">{r.descricao}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{new Date(r.created_at).toLocaleDateString('pt-BR')}</div>
+                    </div>
+                    <div className="text-right font-bold text-sm text-emerald-400 shrink-0">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(r.valor))}
+                    </div>
+                  </div>
+                  <div className="flex justify-start">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${
+                      r.status === 'pendente' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
+                      r.status === 'pago' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                      'bg-slate-900 text-slate-450 border border-slate-750'
+                    }`}>
+                      {r.status ? r.status.toUpperCase() : 'PENDENTE'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </>

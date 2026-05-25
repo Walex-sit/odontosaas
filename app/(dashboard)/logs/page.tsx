@@ -87,43 +87,68 @@ export default function Logs() {
             <p className="text-slate-400 text-sm">Os logs aparecerão conforme ações forem realizadas no sistema.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[700px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data/Hora</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ação</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entidade</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Detalhes</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuário</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {logs.map((l) => {
-                  const color = actionColors[l.action] || 'bg-slate-900 text-slate-400 border border-slate-750'
-                  return (
-                    <tr key={l.id} className="hover:bg-slate-700/30 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
-                        {new Date(l.created_at).toLocaleString('pt-BR')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${color}`}>
-                          {l.action.toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{l.entity}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 max-w-[200px] truncate">
-                        {l.details ? JSON.stringify(l.details) : '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                        {l.user_id ? l.user_id.substring(0, 8) : '—'}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[700px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data/Hora</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ação</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entidade</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Detalhes</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuário</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {logs.map((l) => {
+                    const color = actionColors[l.action] || 'bg-slate-900 text-slate-400 border border-slate-750'
+                    return (
+                      <tr key={l.id} className="hover:bg-slate-700/30 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                          {new Date(l.created_at).toLocaleString('pt-BR')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${color}`}>
+                            {l.action.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{l.entity}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 max-w-[200px] truncate">
+                          {l.details ? JSON.stringify(l.details) : '—'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                          {l.user_id ? l.user_id.substring(0, 8) : '—'}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {logs.map((l) => {
+                const color = actionColors[l.action] || 'bg-slate-900 text-slate-400 border border-slate-750'
+                return (
+                  <div key={l.id} className="p-4 hover:bg-slate-700/20 transition-colors">
+                    <div className="flex justify-between items-center mb-1.5 gap-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${color}`}>
+                        {l.action.toUpperCase()}
+                      </span>
+                      <span className="text-[10px] text-slate-500">{new Date(l.created_at).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div className="text-sm font-bold text-slate-200 mb-1">Módulo: <span className="text-blue-400 font-semibold">{l.entity}</span></div>
+                    <p className="text-xs text-slate-400 leading-relaxed truncate mb-1">
+                      Detalhes: <span className="font-mono text-[11px] text-slate-350">{l.details ? JSON.stringify(l.details) : '—'}</span>
+                    </p>
+                    <div className="text-[10px] text-slate-500">Usuário ID: {l.user_id ? l.user_id.substring(0, 8) : '—'}</div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
         )}
       </div>
     </>

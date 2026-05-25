@@ -117,28 +117,51 @@ export default function Fornecedores() {
             <p className="text-slate-400 text-sm">Adicione seu primeiro fornecedor acima.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nome</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">CNPJ</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Telefone</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">E-mail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {fornecedores.map((f) => (
-                  <tr key={f.id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{f.nome}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.cnpj || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.telefone || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.email || '—'}</td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nome</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">CNPJ</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Telefone</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">E-mail</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {fornecedores.map((f) => (
+                    <tr key={f.id} className="hover:bg-slate-700/30 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{f.nome}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.cnpj || '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.telefone || '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{f.email || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {fornecedores.map((f) => (
+                <div key={f.id} className="p-4 hover:bg-slate-700/20 transition-colors">
+                  <div className="text-sm font-bold text-slate-200 mb-1">{f.nome}</div>
+                  <div className="text-[10px] text-slate-500 mb-2">CNPJ: {f.cnpj || '—'}</div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Telefone</span>
+                      <span className="text-slate-400 font-medium">{f.telefone || '—'}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-slate-500 uppercase tracking-wider font-semibold">E-mail</span>
+                      <span className="text-slate-400 font-medium truncate block">{f.email || '—'}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </>

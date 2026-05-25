@@ -98,28 +98,51 @@ export default function NotasFiscais() {
             <p className="text-slate-400 text-sm">Registre a primeira nota acima.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto w-full no-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[500px]">
-              <thead>
-                <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nº Nota</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Receita Vinculada</th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Emissão</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700/50">
-                {notas.map((n) => (
-                  <tr key={n.id} className="hover:bg-slate-700/30 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{n.numero_nota}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{n.receitas?.descricao || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{n.data_emissao ? new Date(n.data_emissao + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-emerald-450">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n.valor))}</td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nº Nota</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Receita Vinculada</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Emissão</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {notas.map((n) => (
+                    <tr key={n.id} className="hover:bg-slate-700/30 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{n.numero_nota}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{n.receitas?.descricao || '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">{n.data_emissao ? new Date(n.data_emissao + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-emerald-450">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n.valor))}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-slate-700/50">
+              {notas.map((n) => (
+                <div key={n.id} className="p-4 hover:bg-slate-700/20 transition-colors">
+                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-200 truncate">NF: {n.numero_nota}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">Receita: {n.receitas?.descricao || '—'}</div>
+                    </div>
+                    <div className="text-right font-bold text-sm text-emerald-400 shrink-0">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n.valor))}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-slate-450 font-medium">
+                    Emissão: {n.data_emissao ? new Date(n.data_emissao + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </>

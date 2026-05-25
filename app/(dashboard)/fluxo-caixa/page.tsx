@@ -30,41 +30,41 @@ export default function FluxoCaixa() {
 
   return (
     <>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-100">Fluxo de Caixa</h2>
-        <p className="text-slate-400 mt-1 text-sm">Visão consolidada de receitas e despesas</p>
+      <div className="mb-6 sm:mb-8 px-1 sm:px-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-100">Fluxo de Caixa</h2>
+        <p className="text-slate-400 mt-1 text-xs sm:text-sm">Visão consolidada de receitas e despesas</p>
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-slate-800 border border-slate-700/50 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+        <div className="bg-slate-800 border border-slate-700/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-slate-400 font-semibold text-sm">Total Receitas</p>
+            <p className="text-slate-400 font-semibold text-xs sm:text-sm">Total Receitas</p>
             <div className="h-8 w-8 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center border border-emerald-500/20">
               <TrendingUp className="h-4 w-4" />
             </div>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-emerald-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalReceitas)}</h3>
+          <h3 className="text-xl sm:text-3xl font-extrabold text-emerald-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalReceitas)}</h3>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700/50 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
+        <div className="bg-slate-800 border border-slate-700/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-slate-400 font-semibold text-sm">Total Despesas</p>
+            <p className="text-slate-400 font-semibold text-xs sm:text-sm">Total Despesas</p>
             <div className="h-8 w-8 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center border border-red-500/20">
               <TrendingDown className="h-4 w-4" />
             </div>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-red-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalDespesas)}</h3>
+          <h3 className="text-xl sm:text-3xl font-extrabold text-red-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalDespesas)}</h3>
         </div>
 
-        <div className="bg-slate-800 border border-slate-700/50 p-6 rounded-2xl flex flex-col justify-between shadow-sm">
+        <div className="bg-slate-800 border border-slate-700/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-slate-400 font-semibold text-sm">Saldo</p>
+            <p className="text-slate-400 font-semibold text-xs sm:text-sm">Saldo</p>
             <div className={`h-8 w-8 rounded-full flex items-center justify-center border ${saldo >= 0 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
               <DollarSign className="h-4 w-4" />
             </div>
           </div>
-          <h3 className={`text-2xl sm:text-3xl font-extrabold ${saldo >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(saldo)}</h3>
+          <h3 className={`text-xl sm:text-3xl font-extrabold ${saldo >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(saldo)}</h3>
         </div>
       </div>
 
