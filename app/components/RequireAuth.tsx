@@ -16,9 +16,14 @@ export interface UserProfile {
 interface AuthContextType {
   session: Session | null
   profile: UserProfile | null
+  refreshProfile: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType>({ session: null, profile: null })
+const AuthContext = createContext<AuthContextType>({
+  session: null,
+  profile: null,
+  refreshProfile: async () => {}
+})
 
 export const useAuth = () => useContext(AuthContext)
 
@@ -27,6 +32,21 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+
+  async function refreshProfile() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+
+    const { data: profileData } = await supabase
+      .from('user_profiles')
+      .select('id, nome, role')
+      .eq('id', session.user.id)
+      .maybeSingle()
+
+    if (profileData) {
+      setProfile(profileData as UserProfile)
+    }
+  }
 
   useEffect(() => {
     let mounted = true
@@ -63,12 +83,15 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         } else {
           // Tratar perfil nulo sem quebrar
           if (isDev) {
-            console.warn('[RequireAuth] Perfil não encontrado no banco. Usando role padrão "admin" por estar em ambiente Local/Dev.')
-            setProfile({
+            console.warn('[RequireAuth] Perfil não encontrado no banco. Persistindo perfil padrão "admin" por estar em ambiente Local/Dev.')
+            const defaultProfile = {
               id: session.user.id,
               nome: session.user.user_metadata?.full_name || session.user.email || 'Usuário Local',
-              role: 'admin' 
-            })
+              role: 'admin' as UserRole
+            }
+            // Insere no banco para que alterações de role futuras funcionem
+            await supabase.from('user_profiles').insert([defaultProfile])
+            setProfile(defaultProfile)
           } else {
             console.error('[RequireAuth] Perfil não encontrado no banco para o ID:', session.user.id)
             setProfile(null)
@@ -130,7 +153,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile }}>
+    <AuthContext.Provider value={{ session, profile, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

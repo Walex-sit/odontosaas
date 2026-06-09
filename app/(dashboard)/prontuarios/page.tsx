@@ -22,7 +22,7 @@ export default function Prontuarios() {
       const { data: prns } = await supabase
         .from('prontuarios')
         .select('*, pacientes(nome)')
-        .order('data_registro', { ascending: false })
+        .order('created_at', { ascending: false })
 
       setProntuarios(prns || [])
     } catch (e) {
@@ -114,7 +114,7 @@ export default function Prontuarios() {
               <div key={p.id} className="p-6 hover:bg-slate-700/30 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-1">
                   <h4 className="font-bold text-slate-200">{p.pacientes?.nome || 'Paciente'}</h4>
-                  <span className="text-xs text-slate-500">{new Date(p.data_registro).toLocaleDateString('pt-BR')}</span>
+                  <span className="text-xs text-slate-500">{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                 </div>
                 {p.tratamento && <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-2">{p.tratamento}</span>}
                 <p className="text-sm text-slate-350 leading-relaxed">{p.descricao}</p>

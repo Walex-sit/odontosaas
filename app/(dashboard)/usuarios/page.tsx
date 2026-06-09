@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { logAction } from '../../lib/logger'
 import { Users, Shield } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Usuarios() {
+  const { session, refreshProfile } = useAuth()
   const [usuarios, setUsuarios] = useState<any[]>([])
   const [carregando, setCarregando] = useState(true)
 
@@ -35,10 +37,23 @@ export default function Usuarios() {
     setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: novaRole } : u))
 
     try {
-      const { error } = await supabase
+      console.log('userId recebido', userId)
+
+      const { data: profileCheck } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+
+      console.log('profileCheck', profileCheck)
+
+      const { data, error } = await supabase
         .from('user_profiles')
         .update({ role: novaRole })
         .eq('id', userId)
+        .select()
+
+      console.log('updateResult', data)
+      console.log('updateError', error)
 
       if (error) {
         // Reverte o estado local se falhar
@@ -47,6 +62,9 @@ export default function Usuarios() {
         console.error('Erro na alteração de role:', error)
       } else {
         await logAction('edicao', 'usuarios', { user_id_afetado: userId, nova_role: novaRole })
+        if (userId === session?.user?.id) {
+          await refreshProfile()
+        }
       }
     } catch (e: any) {
       // Reverte o estado local se falhar

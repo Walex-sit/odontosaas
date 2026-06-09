@@ -114,6 +114,17 @@ ON CONFLICT (id) DO NOTHING;
 -- 10. Políticas de Segurança (RLS)
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
+-- Função auxiliar para verificar se o usuário é administrador (evita recursão nas políticas de RLS)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.user_profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
 -- Permitir a inserção de novos perfis (necessário se o RLS for verificado durante o gatilho)
 CREATE POLICY "Allow insert for new users profile" 
 ON public.user_profiles FOR INSERT 
@@ -128,18 +139,15 @@ USING (auth.uid() = id);
 CREATE POLICY "Admins can view all profiles" 
 ON public.user_profiles FOR SELECT 
 USING (
-  EXISTS (
-    SELECT 1 FROM public.user_profiles 
-    WHERE id = auth.uid() AND role = 'admin'
-  )
+  public.is_admin()
 );
 
 -- Permitir que administradores atualizem perfis (para mudar roles)
 CREATE POLICY "Admins can update profiles" 
 ON public.user_profiles FOR UPDATE
 USING (
-  EXISTS (
-    SELECT 1 FROM public.user_profiles 
-    WHERE id = auth.uid() AND role = 'admin'
-  )
+  public.is_admin()
+)
+WITH CHECK (
+  true
 );
