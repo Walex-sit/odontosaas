@@ -186,22 +186,22 @@ export default function DashboardFinanceiro() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
       <SummaryCard
         label="Total Receitas"
-        value={dados.total_receitas}
+        value={dados?.total_receitas ?? 0}
         icon={TrendingUp}
         colorScheme="green"
       />
       <SummaryCard
         label="Total Despesas"
-        value={dados.total_despesas}
+        value={dados?.total_despesas ?? 0}
         icon={TrendingDown}
         colorScheme="red"
       />
       <SummaryCard
         label="Saldo Líquido"
-        value={dados.saldo_liquido}
+        value={dados?.saldo_liquido ?? 0}
         icon={Wallet}
         colorScheme="dynamic"
-        dynamicValue={dados.saldo_liquido}
+        dynamicValue={dados?.saldo_liquido ?? 0}
       />
     </div>
   )
