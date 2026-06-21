@@ -10,6 +10,7 @@ export default function LoginView() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [carregando, setCarregando] = useState(false)
+  const [enviandoReset, setEnviandoReset] = useState(false)
   const router = useRouter()
 
   async function login() {
@@ -19,7 +20,7 @@ export default function LoginView() {
     }
     setCarregando(true)
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password: senha,
       })
@@ -27,7 +28,9 @@ export default function LoginView() {
       if (error) {
         alert(error.message)
       } else {
-        await logAction('login', 'auth', { email })
+        if (data?.user?.id) {
+          await logAction(data.user.id, 'login', 'auth', { email })
+        }
         router.push('/pacientes')
       }
     } catch (e: any) {
@@ -37,27 +40,26 @@ export default function LoginView() {
     }
   }
 
-  async function registrar() {
-    if (!email || !senha) {
-      alert('Por favor, preencha todos os campos.')
+
+  async function esqueceuSenha() {
+    if (!email) {
+      alert('Digite seu e-mail acima para receber o link de redefinição.')
       return
     }
-    setCarregando(true)
+    setEnviandoReset(true)
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password: senha,
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
       })
-
       if (error) {
         alert(error.message)
       } else {
-        alert('Conta criada com sucesso! Verifique seu e-mail ou acesse o sistema.')
+        alert('Link de redefinição enviado para ' + email)
       }
     } catch (e: any) {
-      alert(e.message || 'Erro ao criar conta')
+      alert(e.message || 'Erro ao enviar e-mail')
     } finally {
-      setCarregando(false)
+      setEnviandoReset(false)
     }
   }
 
@@ -169,13 +171,13 @@ export default function LoginView() {
               {carregando ? 'Entrando...' : 'Entrar'}
             </button>
 
-            {/* Botão Criar Conta */}
+            {/* Esqueci minha senha */}
             <button
-              onClick={registrar}
-              disabled={carregando}
-              className="w-full border border-blue-500 text-blue-400 py-3 rounded-xl font-semibold hover:bg-blue-500/10 disabled:opacity-50 transition-all text-sm active:scale-[0.98]"
+              onClick={esqueceuSenha}
+              disabled={enviandoReset || carregando}
+              className="w-full text-slate-400 hover:text-blue-400 disabled:opacity-50 transition-colors text-sm py-1 font-medium"
             >
-              Criar conta
+              {enviandoReset ? 'Enviando...' : 'Esqueci minha senha'}
             </button>
           </div>
         </div>

@@ -1,12 +1,56 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
+// ---------------------------------------------------------------------------
+// Validação de variáveis de ambiente
+// ---------------------------------------------------------------------------
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-console.log('SUPABASE URL:', supabaseUrl)
-console.log('TEM ANON KEY:', !!supabaseAnonKey)
+if (!supabaseUrl) {
+  throw new Error(
+    '[Supabase] NEXT_PUBLIC_SUPABASE_URL não está definida. ' +
+    'Verifique o arquivo .env.local na raiz do projeto.'
+  )
+}
 
-export const supabase = createClient(
-  supabaseUrl!,
-  supabaseAnonKey!
-)
+if (!supabaseAnonKey) {
+  throw new Error(
+    '[Supabase] NEXT_PUBLIC_SUPABASE_ANON_KEY não está definida. ' +
+    'Verifique o arquivo .env.local na raiz do projeto.'
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Singleton — garante uma única instância do cliente em toda a aplicação
+// ---------------------------------------------------------------------------
+// Tipagem do banco (gerada pelo Supabase CLI: `supabase gen types typescript`)
+// Por ora usada como `unknown` até a geração dos tipos automáticos.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Database = any
+
+let _supabase: SupabaseClient<Database> | null = null
+
+function getSupabaseClient(): SupabaseClient<Database> {
+  if (!_supabase) {
+    _supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        // Persiste a sessão no localStorage (padrão para apps web)
+        persistSession: true,
+        // Detecta a sessão na URL após redirecionamentos de auth
+        detectSessionInUrl: true,
+      },
+    })
+  }
+  return _supabase
+}
+
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
+
+/** Instância singleton do cliente Supabase. Use em Client Components e Hooks. */
+export const supabase = getSupabaseClient()
+
+/** Alternativa funcional — retorna sempre a mesma instância singleton. */
+export { getSupabaseClient as getSupabase }
+

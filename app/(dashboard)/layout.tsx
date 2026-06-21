@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import RequireAuth from '../components/RequireAuth'
+import RouteGuard from '../components/RouteGuard'
 
 export default function DashboardLayout({
   children,
@@ -22,7 +23,9 @@ export default function DashboardLayout({
           
           <main className="flex-1 overflow-y-auto px-2 py-4 sm:p-6 md:p-8 lg:px-12 relative">
             <div className="max-w-7xl mx-auto pb-12">
-              {children}
+              <RouteGuard>
+                {children}
+              </RouteGuard>
             </div>
           </main>
         </div>

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth, UserRole } from './RequireAuth'
 import { logAction } from '../lib/logger'
+import { ROUTE_PERMISSIONS } from '../lib/rbac'
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -20,28 +21,11 @@ import {
   History, 
   LogOut,
   ChevronDown,
-  X
+  X,
+  UserCircle
 } from 'lucide-react'
 
-// Definição centralizada das permissões por perfil
-const PERMISSIONS: Record<UserRole, string[]> = {
-  admin: [
-    '/overview', '/agenda', '/pacientes', '/prontuarios',
-    '/financeiro', '/despesas', '/fluxo-caixa',
-    '/fornecedores', '/compras', '/notas-fiscais',
-    '/usuarios', '/logs'
-  ],
-  dentista: [
-    '/overview', '/agenda', '/pacientes', '/prontuarios'
-  ],
-  recepcao: [
-    '/overview', '/agenda', '/pacientes', '/financeiro'
-  ],
-  financeiro: [
-    '/overview', '/financeiro', '/despesas', '/fluxo-caixa',
-    '/fornecedores', '/compras', '/notas-fiscais'
-  ],
-}
+// Permissões centralizadas em app/lib/rbac.ts
 
 interface MenuItem {
   path: string
@@ -86,6 +70,7 @@ const MENU_SECTIONS: MenuSection[] = [
     items: [
       { path: '/usuarios', label: 'Usuários e Perfis', icon: ShieldCheck },
       { path: '/logs', label: 'Logs (Auditoria)', icon: History },
+      { path: '/minha-conta', label: 'Minha Conta', icon: UserCircle },
     ],
   },
 ]
@@ -108,7 +93,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { profile } = useAuth()
 
   const role = profile?.role || 'recepcao'
-  const allowedPaths = PERMISSIONS[role]
+  const allowedPaths = ROUTE_PERMISSIONS[role]
   const roleInfo = ROLE_LABELS[role]
 
   function isItemActive(item: MenuItem) {
@@ -127,7 +112,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   }
 
   async function logout() {
-    await logAction('logout', 'auth')
+    if (profile?.id) {
+      await logAction(profile.id, 'logout', 'auth')
+    }
     await supabase.auth.signOut()
     router.push('/login')
   }

@@ -41,7 +41,9 @@ export default function Pacientes() {
         }
       ])
 
-      await logAction('criacao', 'pacientes', { nome })
+      if (session?.user?.id) {
+        await logAction(session.user.id, 'criacao', 'pacientes', { nome })
+      }
 
       setNome('')
       carregarPacientes(session.user.id)

@@ -42,7 +42,9 @@ export default function Financeiro() {
         }
       ])
 
-      await logAction('financeiro', 'receitas', { descricao, valor: Number(valor), acao: 'receita_criada' })
+      if (session?.user?.id) {
+        await logAction(session.user.id, 'financeiro', 'receitas', { descricao, valor: Number(valor), acao: 'receita_criada' })
+      }
 
       setDescricao('')
       setValor('')

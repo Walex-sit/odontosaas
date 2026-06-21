@@ -45,7 +45,9 @@ export default function Despesas() {
         }
       ])
 
-      await logAction('financeiro', 'despesas', { descricao, valor: Number(valor), categoria, acao: 'despesa_criada' })
+      if (session?.user?.id) {
+        await logAction(session.user.id, 'financeiro', 'despesas', { descricao, valor: Number(valor), categoria, acao: 'despesa_criada' })
+      }
 
       setDescricao('')
       setValor('')
